@@ -1,0 +1,20 @@
+{
+  "name": "nest-react-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single-server NestJS + React template: one process, one port, SSR and hydration.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "prepare": "npm run build -w @app/shared",
+    "dev": "npm run build -w @app/shared && npm run start:dev -w @app/api",
+    "build": "npm run build -w @app/shared && npm run build -w @app/api && npm run build -w @app/web",
+    "start": "npm run start -w @app/api",
+    "typecheck": "npm run build -w @app/shared && npm run typecheck --workspaces --if-present"
+  }
+}
