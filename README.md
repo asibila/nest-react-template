@@ -33,6 +33,44 @@ npm run dev          # http://127.0.0.1:3000
 middleware, and serves the API, the SSR-rendered HTML and HMR from the same
 port. There is no second dev port.
 
+### Hot reload
+
+| You edit | What happens |
+|---|---|
+| `apps/web/**` | Vite HMR updates the page in place; React state survives |
+| `apps/api/src/**` | Node's watcher restarts the whole process (Nest and Vite) |
+| `packages/shared/src/**` | Run `npm run build -w @app/shared`; the new `dist` file is watched, so the API restarts |
+| `apps/api/.env` | Restart manually (it is read at boot) |
+
+The watcher is `nodemon`, configured in `apps/api/nodemon.json` and scoped to
+`apps/api/src` only. Scoping matters: Vite runs inside the same process and keeps
+touching files in `node_modules`, so watching the whole module graph would
+restart the server every few seconds even when nothing changed. `nodemon` gives
+us an include list, and it behaves the same on Windows, macOS and Linux.
+
+```json
+"start:dev": "nodemon"
+```
+
+Each restart recompiles TypeScript through `ts-node`, so type errors also stop the
+server until fixed. Add `.env` to `watch` in `nodemon.json` if you want config
+changes to restart automatically.
+
+### Starting a new project from this template
+
+Copy the source only — never `node_modules` and never `dist`. The workspace
+packages (`@app/api`, `@app/web`, `@app/shared`) are linked into
+`node_modules` as junctions/symlinks, and those links break when the folder is
+copied, which shows up as `Cannot find module '@app/shared'` during the build.
+
+```sh
+npm ci          # reinstalls from the lockfile and recreates the workspace links
+npm run dev
+```
+
+`npm ci` is quick on a machine that has installed this template before: npm
+reuses its package cache instead of downloading again.
+
 ## How the two halves meet
 
 One server, one port, in both modes. The API is the host; React is mounted into it.
@@ -141,7 +179,7 @@ Run everything from the repository root.
 
 ```sh
 npm install          # installs all workspaces and builds @app/shared
-npm run dev          # one server on :3000 — Nest API + React with HMR
+npm run dev          # one server on :3000 — watch API, HMR for React
 npm run build        # shared -> API -> client bundle -> SSR bundle, in that order
 npm start            # same server, serving the prebuilt React app
 npm run typecheck    # typecheck every workspace

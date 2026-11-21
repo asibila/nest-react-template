@@ -28,13 +28,19 @@ Liveness check for hosts and uptime monitors:
 From the repository root:
 
 ```sh
-npm run dev     # ts-node src/main.ts --dev — API + Vite SSR + HMR on :3000
+npm run dev     # node --watch ... src/main.ts --dev — API + Vite SSR + HMR on :3000
 npm run build   # tsc -> dist
 npm start       # node dist/main.js — serves the prebuilt web app
 ```
 
 `--dev` mounts the Vite dev server as middleware instead of serving static files,
 so a single process on `http://127.0.0.1:3000` answers both API calls and the UI.
+
+In development the entry point runs under `nodemon`, configured in
+`nodemon.json` to watch `src` and `packages/shared/dist`. Editing the API restarts
+the server; editing the web app is handled by Vite HMR without a restart. Watching
+only those paths is deliberate — Vite runs in the same process and touches files
+under `node_modules`, which would otherwise cause constant restarts.
 
 Build the web half too before `npm start`; without it the server boots into
 `api-only` mode. `WEB_DIST_DIR` points at a different build output (production

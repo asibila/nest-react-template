@@ -11,7 +11,8 @@ server-side rendering and hydration from one process on one port.
 
 ## Commands
 
-- `npm run dev` — one server on http://127.0.0.1:3000 with HMR
+- `npm run dev` — one server on http://127.0.0.1:3000; watches the API and serves
+  the React app with HMR
 - `npm run build` — shared, then API, then web client + SSR bundles
 - `npm start` — run the compiled server against the built web app
 - `npm run typecheck` — typecheck every workspace

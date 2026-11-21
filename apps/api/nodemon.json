@@ -1,0 +1,8 @@
+{
+  "watch": ["src", "../../packages/shared/dist"],
+  "ext": "ts,js,json",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "node --require ts-node/register src/main.ts --dev",
+  "delay": 300,
+  "signal": "SIGTERM"
+}
